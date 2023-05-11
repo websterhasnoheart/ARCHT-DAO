@@ -6,3 +6,5 @@ The content of this repo is affiliated with the graduation research project by t
 1. ERC-721 (NFT)
 2. ERC-20 (DAO token)
 3. Governance contract
+
+The DAO framework displays as follows:
