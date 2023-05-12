@@ -21,7 +21,7 @@ contract ArchtDAO is ERC721, ERC721URIStorage, ERC721Burnable, AccessControl, EI
     Counters.Counter private _tokenIdCounter;
     Counters.Counter public _totalSupply;
     
-    //Token unique identifier / URL
+    //Token based URI, this generally leads to a json file storing necessary info from the token and holder
     string public baseURI = "";
 
     
@@ -29,7 +29,7 @@ contract ArchtDAO is ERC721, ERC721URIStorage, ERC721Burnable, AccessControl, EI
     //                               Roles
     // =========================================================================
     
-    bytes32 public MANAGER_ROLE = keccak256("MANAGER_ROLE");
+    bytes32 public ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 public MINTER_ROLE = keccak256("MINTER_ROLE");
 
     // =========================================================================
@@ -38,7 +38,7 @@ contract ArchtDAO is ERC721, ERC721URIStorage, ERC721Burnable, AccessControl, EI
 
     //Constructor 
     constructor() ERC721("ArchtDAO", "ARCHT") EIP712("ArchtDAO", "1") {
-        _grantRole(MANAGER_ROLE, msg.sender);
+        _grantRole(ADMIN_ROLE, msg.sender);
         _grantRole(MINTER_ROLE, msg.sender);
     }
 
@@ -47,11 +47,11 @@ contract ArchtDAO is ERC721, ERC721URIStorage, ERC721Burnable, AccessControl, EI
     // =========================================================================
 
     //Set roles to different address
-    function setManager(address new_manager_address) public onlyRole(MANAGER_ROLE){
-        _grantRole(MANAGER_ROLE, new_manager_address);
+    function setManager(address new_manager_address) public onlyRole(ADMIN_ROLE){
+        _grantRole(ADMIN_ROLE, new_manager_address);
     }
 
-    function setMinter(address minter_address) public onlyRole(MANAGER_ROLE) {
+    function setMinter(address minter_address) public onlyRole(ADMIN_ROLE) {
         _grantRole(MINTER_ROLE, minter_address);
     }
 
@@ -61,7 +61,7 @@ contract ArchtDAO is ERC721, ERC721URIStorage, ERC721Burnable, AccessControl, EI
     
     }
     //Set token URI to store metadata
-    function setBaseURI(string memory newBaseURI) public onlyRole(MANAGER_ROLE) {
+    function setBaseURI(string memory newBaseURI) public onlyRole(ADMIN_ROLE) {
         baseURI = newBaseURI;
     }
 
