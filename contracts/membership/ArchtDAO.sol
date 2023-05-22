@@ -65,6 +65,7 @@ contract ArchtDAO is ERC721, ERC721URIStorage, ERC721Burnable, AccessControl, EI
         baseURI = newBaseURI;
     }
 
+    //Return the current token URI
     function tokenURI(uint256 tokenId)
         public
         view
@@ -75,13 +76,16 @@ contract ArchtDAO is ERC721, ERC721URIStorage, ERC721Burnable, AccessControl, EI
     }
 
     // Mint a membership card to the given address
-    function mint(address to, string memory _tokenURI) public onlyRole(MINTER_ROLE) {
+    function mint(address to ) external {
         require(balanceOf(to) == 0, "This address already owns a token");
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
         _safeMint(to, tokenId);
-        _setTokenURI(tokenId, _tokenURI);
         _totalSupply.increment();
+    }
+
+    function setURIforToken(uint256 tokenId, string memory _tokenURI) public onlyRole(ADMIN_ROLE) {
+        _setTokenURI(tokenId, _tokenURI);
     }
 
     // This function makes all membership token untransferable
