@@ -22,6 +22,7 @@ contract ArchtDAO is ERC721, ERC721URIStorage, AccessControl, EIP712, ERC721Vote
     
     //Token based URI, this generally leads to a json file storing necessary info from the token and holder
     string public baseURI = "";
+    string public invalidTokenURI = "";
 
     
     // =========================================================================
@@ -87,6 +88,10 @@ contract ArchtDAO is ERC721, ERC721URIStorage, AccessControl, EIP712, ERC721Vote
         _setTokenURI(tokenId, _tokenURI);
     }
 
+    function setInvalidURIforToken(string memory _tokenURI) public onlyRole(ADMIN_ROLE) {
+        invalidTokenURI = _tokenURI;
+    }
+
     // This function makes all membership token untransferable
     function _beforeTokenTransfer(address from, address to, uint256 tokenId, uint256 batchSize)
         internal
@@ -106,6 +111,11 @@ contract ArchtDAO is ERC721, ERC721URIStorage, AccessControl, EIP712, ERC721Vote
     // Ensure correct execution of _burn in inherited classes
     function _burn(uint256 tokenId) internal override(ERC721, ERC721URIStorage) onlyRole(ADMIN_ROLE){
         super._burn(tokenId);
+    }
+
+    function removeMembership(uint256 tokenId) internal onlyRole(ADMIN_ROLE) {
+        _totalSupply.decrement();
+        _setTokenURI(tokenId, invalidTokenURI);
     }
 
     // Return true if that address has membership of the DAO
