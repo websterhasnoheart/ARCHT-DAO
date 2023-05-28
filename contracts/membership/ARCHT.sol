@@ -310,4 +310,8 @@ contract ARCHT is ERC721URIStorage, Ownable {
 
         super.renounceOwnership();
     }
+
+    function DAOmemberList() public view returns (address payable[] memory) {
+        return _members;
+    }
 }
