@@ -89,7 +89,9 @@ If you would like to deploy your contract in another network other than mainnet 
 **8. Verify your contract on ethereum so others can interact**
 
 `npx hardhat run scripts/deploy.js --network sepolia`
+
 `npx hardhat verify --network sepolia <contract address> <arguments(separated by spaces if there are more)>`
+
 `npx hardhat verify --network mainnet DEPLOYED_CONTRACT_ADDRESS "Constructor argument 1"`
 
 In case you have more complex args :
