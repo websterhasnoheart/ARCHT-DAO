@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.15;
 
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
@@ -9,14 +9,6 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract ARCHT is ERC721URIStorage, Ownable {
     using Address for address payable;
     using Counters for Counters.Counter;
-
-    Counters.Counter public _totalSupply;
-
-    address payable[] public _members;
-
-    uint public tokenId = 0;
-
-    string public baseURI = "";
 
     struct Application {
         string name;
@@ -46,8 +38,13 @@ contract ARCHT is ERC721URIStorage, Ownable {
     mapping(address => Application) public applications;
     mapping(uint => RemovalRequest) public removalRequests;
     mapping(uint => Evaluation) public evaluations;
+
+    Counters.Counter public _totalSupply;
     uint public evaluationId = 0;
     uint public removalRequestId = 0;
+    address payable[] public _members;
+    uint public tokenId = 0;
+    string public baseURI = "";
 
     //Constructor
     constructor(
@@ -87,11 +84,7 @@ contract ARCHT is ERC721URIStorage, Ownable {
             );
     }
 
-    function applyToJoin(
-        string memory name,
-        address walletAddress,
-        string memory portfolioUrl
-    ) public payable {
+    function applyToJoin(string memory name, address walletAddress, string memory portfolioUrl) public payable {
         require(_members.length >= 3, "No enough addresses");
         require(
             address(this).balance >= msg.value,

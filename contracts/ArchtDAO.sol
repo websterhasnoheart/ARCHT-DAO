@@ -65,6 +65,16 @@ contract ArchtDAO is ERC721, ERC721URIStorage, AccessControl, EIP712, ERC721Vote
         baseURI = newBaseURI;
     }
 
+    //Set URI for specific token
+    function setURIforToken(uint256 tokenId, string memory _tokenURI) public onlyRole(ADMIN_ROLE) {
+        _setTokenURI(tokenId, _tokenURI);
+    }
+
+    //Set URI for invalid token/removed membership
+    function setInvalidURIforToken(string memory _tokenURI) public onlyRole(ADMIN_ROLE) {
+        invalidTokenURI = _tokenURI;
+    }
+
     //Return the current token URI
     function tokenURI(uint256 tokenId)
         public
@@ -84,13 +94,6 @@ contract ArchtDAO is ERC721, ERC721URIStorage, AccessControl, EIP712, ERC721Vote
         _totalSupply.increment();
     }
 
-    function setURIforToken(uint256 tokenId, string memory _tokenURI) public onlyRole(ADMIN_ROLE) {
-        _setTokenURI(tokenId, _tokenURI);
-    }
-
-    function setInvalidURIforToken(string memory _tokenURI) public onlyRole(ADMIN_ROLE) {
-        invalidTokenURI = _tokenURI;
-    }
 
     // This function makes all membership token untransferable
     function _beforeTokenTransfer(address from, address to, uint256 tokenId, uint256 batchSize)
