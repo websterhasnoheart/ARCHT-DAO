@@ -7,16 +7,20 @@ The contract is developed with libraries provided by `OpenZeppeLin`, deployed an
 2. HardHat: https://hardhat.org/hardhat-runner/docs/getting-started#overview
 
 **1. Install OpenZeppeLin libraries**
+
 `npm install @openzeppelin/contracts`
 
 **2. Install hardhat**
+
 `npm install --save-dev hardhat`
 
 **3. SetUp: Create a hardhat project for your contracts to be compiled, deployed and verified**
+
 `npx hardhat`
 Select `Create a JavaScript project` for the full package
 
 **4a. Open the created project folder and Compile your contracts**
+
 `npx hardhat compile`
 Modify your contract parameters accordingly in `deploy.js` -> `contractFactory.deploy` like the follows :
 
@@ -28,7 +32,7 @@ const archt = await ARCHT.deploy(
 ```
 The contract I develoepd requires 3 wallet addresses as arguments.
 
-**4.b Modify hardhat.config.js**
+**4b. Modify hardhat.config.js**
 
 ```
 require("@nomicfoundation/hardhat-toolbox");
@@ -59,12 +63,15 @@ module.exports = {
 
 
 **5. Test your contracts**
+
 `npx hardhat test` after modify `test/contract.js` accordingly.
 
 **6. Deploy your contracts**
+
 `npx hardhat run`
 
 **7. Connecting a wallet or Dapp to Hardhat Network**
+
 ```
 $ npx hardhat node
 Started HTTP and WebSocket JSON-RPC server at http://127.0.0.1:8545/
@@ -75,6 +82,7 @@ If you would like to deploy your contract in another network other than mainnet 
 `npx hardhat run --network <your-network> scripts/deploy.js`
 
 **8. Verify your contract on ethereum so others can interact**
+
 `npx hardhat run scripts/deploy.js --network sepolia`
 `npx hardhat verify --network sepolia <contract address> <arguments(separated by spaces if there are more)>`
 `npx hardhat verify --network mainnet DEPLOYED_CONTRACT_ADDRESS "Constructor argument 1"`
