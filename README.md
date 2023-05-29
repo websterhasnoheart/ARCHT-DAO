@@ -17,11 +17,13 @@ The contract is developed with libraries provided by `OpenZeppeLin`, deployed an
 **3. SetUp: Create a hardhat project for your contracts to be compiled, deployed and verified**
 
 `npx hardhat`
+
 Select `Create a JavaScript project` for the full package
 
 **4a. Open the created project folder and Compile your contracts**
 
 `npx hardhat compile`
+
 Modify your contract parameters accordingly in `deploy.js` -> `contractFactory.deploy` like the follows :
 
 ```
@@ -77,8 +79,11 @@ $ npx hardhat node
 Started HTTP and WebSocket JSON-RPC server at http://127.0.0.1:8545/
 ```
 Open a new terminal and deploy the smart contract in the localhost network
+
 `npx hardhat run --network localhost scripts/deploy.js`
+
 If you would like to deploy your contract in another network other than mainnet :
+
 `npx hardhat run --network <your-network> scripts/deploy.js`
 
 **8. Verify your contract on ethereum so others can interact**
@@ -88,6 +93,7 @@ If you would like to deploy your contract in another network other than mainnet 
 `npx hardhat verify --network mainnet DEPLOYED_CONTRACT_ADDRESS "Constructor argument 1"`
 
 In case you have more complex args :
+
 Create a file `arguments.js`
 ```
 module.exports = [
@@ -102,6 +108,7 @@ module.exports = [
 ];
 ```
 And run
+
 `npx hardhat verify --constructor-args arguments.js DEPLOYED_CONTRACT_ADDRESS`
 
 For more info : [HardHat Verify](https://hardhat.org/hardhat-runner/plugins/nomicfoundation-hardhat-verify)
