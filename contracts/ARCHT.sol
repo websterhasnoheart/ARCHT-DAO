@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.15;
+pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
+// Author: @Z.Chen
 contract ARCHT is ERC721URIStorage, Ownable {
     using Address for address payable;
     using Counters for Counters.Counter;
@@ -30,6 +31,7 @@ contract ARCHT is ERC721URIStorage, Ownable {
         address target;
         uint confirmationCount;
         mapping(address => bool) confirmations;
+        address[] rjudges;
     }
 
     mapping(address => string) public _membersInfo;
@@ -44,7 +46,6 @@ contract ARCHT is ERC721URIStorage, Ownable {
     uint public removalRequestId = 0;
     address payable[] public _members;
     uint public tokenId = 0;
-    string public baseURI = "";
 
     //Constructor
     constructor(
@@ -84,7 +85,11 @@ contract ARCHT is ERC721URIStorage, Ownable {
             );
     }
 
-    function applyToJoin(string memory name, address walletAddress, string memory portfolioUrl) public payable {
+    function applyToJoin(
+        string memory name,
+        address walletAddress,
+        string memory portfolioUrl
+    ) public payable {
         require(_members.length >= 3, "No enough addresses");
         require(
             address(this).balance >= msg.value,
@@ -128,6 +133,19 @@ contract ARCHT is ERC721URIStorage, Ownable {
         // Confirm the application
         applications[applicant].confirmations[msg.sender] = true;
         applications[applicant].confirmationCount++;
+
+        // Check if the confirmation count is 3 or more
+        if (applications[applicant].confirmationCount >= 3) {
+            // Add the applicant as a member of the DAO
+            _members.push(payable(applicant));
+            tokenId++;
+            _mint(applicant, tokenId);
+            _totalSupply.increment();
+            memberToTokenId[applicant] = tokenId;
+
+            // Remove the application from the mapping
+            delete applications[applicant];
+        }
     }
 
     function rejectApplication(address applicant) public {
@@ -146,35 +164,6 @@ contract ARCHT is ERC721URIStorage, Ownable {
         return applications[applicant].judges;
     }
 
-    function getPendingApplications(
-        address evaluator
-    ) public view returns (address[] memory) {
-        address[] memory pendingApplications;
-
-        // Iterate over all applications
-        for (uint i = 0; i < _members.length; i++) {
-            address applicant = _members[i];
-            Application storage application = applications[applicant];
-
-            // Check if evaluator is in the list and hasn't confirmed the application yet
-            for (uint j = 0; j < application.judges.length; j++) {
-                if (
-                    application.judges[j] == evaluator &&
-                    application.confirmations[evaluator] == false
-                ) {
-                    // Add applicant to the pendingApplications array
-                    pendingApplications = appendAddress(
-                        pendingApplications,
-                        applicant
-                    );
-                    break;
-                }
-            }
-        }
-
-        return pendingApplications;
-    }
-
     // Helper function to append to an address array
     function appendAddress(
         address[] memory arr,
@@ -186,20 +175,6 @@ contract ARCHT is ERC721URIStorage, Ownable {
         }
         newArray[arr.length] = addr;
         return newArray;
-    }
-
-    function joinDAO() public {
-        require(
-            applications[msg.sender].confirmationCount >= 3,
-            "Application not approved yet"
-        );
-
-        _members.push(payable(msg.sender));
-        tokenId++;
-        _mint(msg.sender, tokenId);
-        _totalSupply.increment();
-        memberToTokenId[msg.sender] = tokenId;
-        delete applications[msg.sender];
     }
 
     function requestToRemove(address target) public {
@@ -217,6 +192,10 @@ contract ARCHT is ERC721URIStorage, Ownable {
                 tempAddresses[index]
             ] = false;
 
+            removalRequests[removalRequestId].rjudges.push(
+                tempAddresses[index]
+            );
+
             // Remove the member from the temporary array
             tempAddresses[index] = tempAddresses[tempAddresses.length - 1];
             assembly {
@@ -225,6 +204,12 @@ contract ARCHT is ERC721URIStorage, Ownable {
         }
 
         removalRequests[removalRequestId].target = target;
+    }
+
+    function getRemovalEvaluators(
+        uint requestID
+    ) public view returns (address[] memory) {
+        return removalRequests[requestID].rjudges;
     }
 
     function confirmRemoval(uint requestId) public {
@@ -256,7 +241,7 @@ contract ARCHT is ERC721URIStorage, Ownable {
         }
     }
 
-    function applyForEvaluation(address[] memory evaluators) public {
+    function applyForEvaluation(address[] memory evaluators) public payable {
         require(evaluators.length <= 3, "Too many evaluators");
 
         // Increase evaluationId
